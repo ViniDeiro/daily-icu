@@ -26,6 +26,14 @@ app.use("/hospitals", hospitals);
 app.use("/patients", patients);
 app.use("/", evolucoes);
 
+app.get("/", (_req, res) =>
+  res.json({
+    ok: true,
+    service: "daily-icu-backend",
+    endpoints: ["/health", "/auth/login", "/hospitals", "/patients"]
+  })
+);
+
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
 export default app;
