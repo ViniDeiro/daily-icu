@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "UTI MVP",
+    "slug": "uti-mvp",
+    "scheme": "utimvp",
+    "version": "0.1.0",
+    "sdkVersion": "51.0.0",
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/18eee4ef-e422-4c84-99d3-dd6f159fe8fd",
+      "fallbackToCacheTimeout": 0
+    },
+    "orientation": "portrait",
+    "platforms": ["ios", "android", "web"],
+    "ios": {
+      "bundleIdentifier": "com.utimvp.app",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Precisamos do microfone para gravar o áudio do cliente."
+      }
+    },
+    "android": {
+      "package": "com.utimvp.app",
+      "permissions": ["RECORD_AUDIO"]
+    },
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "extra": {
+      "apiBaseUrl": "http://localhost:3000",
+      "eas": {
+        "projectId": "18eee4ef-e422-4c84-99d3-dd6f159fe8fd"
+      }
+    }
+  }
+}

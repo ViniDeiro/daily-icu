@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ViaAerea {
+  IOT
+  TQT
+  NENHUMA
+}
+
+model Hospital {
+  id         String   @id @default(uuid()) @db.Uuid
+  nome       String
+  createdAt  DateTime @default(now())
+  users      User[]
+  pacientes  Paciente[]
+}
+
+model User {
+  id          String   @id @default(uuid()) @db.Uuid
+  nome        String
+  email       String   @unique
+  senhaHash   String
+  hospitalId  String   @db.Uuid
+  hospital    Hospital @relation(fields: [hospitalId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model Paciente {
+  id                         String   @id @default(uuid()) @db.Uuid
+  nome                       String
+  registroHospitalar         String
+  leito                      String?
+  dataNascimento             DateTime
+  dataInternacaoHospitalar   DateTime?
+  dataInternacaoUti          DateTime?
+  previsaoAlta               DateTime?
+  alergias                   String?
+  hospitalId                 String   @db.Uuid
+  hospital                   Hospital @relation(fields: [hospitalId], references: [id])
+  setor                      String   @default("UTI")
+  createdAt                  DateTime @default(now())
+  evolucoes                  EvolucaoDiaria[]
+  baseClinica                PacienteBaseClinica?
+}
+
+model PacienteBaseClinica {
+  id                      String   @id @default(uuid()) @db.Uuid
+  pacienteId              String   @unique @db.Uuid
+  paciente                Paciente @relation(fields: [pacienteId], references: [id])
+
+  diagnosticoPrincipal    String?
+  diagnosticosSecundarios String?
+  comorbidades            String?
+  hda                     String?
+  hpp                     String?
+  muc                     String?
+  saps3                   Int?
+
+  drogasVasoativas          Boolean  @default(false)
+  drogasVasoativasDescricao String?
+  ventilacaoMecanica        Boolean  @default(false)
+  viaAerea                  ViaAerea @default(NENHUMA)
+  dispositivos              String[] @db.Text
+
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+}
+
+model EvolucaoDiaria {
+  id                        String   @id @default(uuid()) @db.Uuid
+  pacienteId                String   @db.Uuid
+  paciente                  Paciente @relation(fields: [pacienteId], references: [id])
+  data                      DateTime
+  diaInternacaoUti          Int
+  condutaDiaria             String?
+  saps3                     Int?
+  diagnosticoPrincipal      String?
+  diagnosticosSecundarios   String?
+  comorbidades              String?
+  hda                       String?
+  hpp                       String?
+  muc                       String?
+
+  neurologico               String?
+  respiratorio              String?
+  cardiovascular            String?
+  renal                     String?
+  gastrointestinal          String?
+  infectologico             String?
+  exames                    String?
+
+  drogasVasoativas          Boolean   @default(false)
+  drogasVasoativasDescricao String?
+  ventilacaoMecanica        Boolean   @default(false)
+  viaAerea                  ViaAerea  @default(NENHUMA)
+  dispositivos              String[]  @db.Text
+  createdAt                 DateTime  @default(now())
+
+  @@unique([pacienteId, data])
+}
