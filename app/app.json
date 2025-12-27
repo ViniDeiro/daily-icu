@@ -30,6 +30,7 @@
     },
     "extra": {
       "apiBaseUrl": "http://localhost:3000",
+      "mockMode": true,
       "eas": {
         "projectId": "18eee4ef-e422-4c84-99d3-dd6f159fe8fd"
       }

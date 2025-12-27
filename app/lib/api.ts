@@ -4,7 +4,10 @@ import { useAuth } from "../stores/auth";
 
 const envBaseURL = (globalThis as any)?.process?.env?.EXPO_PUBLIC_API_BASE_URL as string | undefined;
 const envMockMode = (globalThis as any)?.process?.env?.EXPO_PUBLIC_MOCK_MODE as string | undefined;
-const mockMode = envMockMode === "1" || envMockMode === "true";
+const extraMockMode =
+  (Constants?.expoConfig?.extra as any)?.mockMode ??
+  ((Constants as any)?.manifest?.extra as any)?.mockMode;
+const mockMode = envMockMode === "1" || envMockMode === "true" || !!extraMockMode;
 
 const baseURL =
   envBaseURL ||
@@ -168,6 +171,29 @@ if (mockMode) {
 
     if (method === "get" && path === "/hospitals") {
       return json(200, hospitals, config);
+    }
+
+    // ADD: mock create patient
+    if (method === "post" && path === "/patients") {
+      const body = config.data ? (typeof config.data === "string" ? JSON.parse(config.data) : config.data) : {};
+      const id = `p-${Math.random().toString(36).slice(2, 9)}`;
+      const p: Paciente = {
+        id,
+        nome: body?.nome ?? "Paciente",
+        registroHospitalar: body?.registroHospitalar ?? String(Math.floor(Math.random() * 100000)),
+        leito: body?.leito ?? null,
+        dataNascimento: body?.dataNascimento ?? null,
+        dataInternacaoHospitalar: body?.dataInternacaoHospitalar ?? null,
+        dataInternacaoUti: body?.dataInternacaoUti ?? null,
+        previsaoAlta: body?.previsaoAlta ?? null,
+        alergias: body?.alergias ?? null,
+        setor: "UTI",
+        saps3Atual: null,
+        mortalidadeEstimada: null,
+        baseClinica: null
+      };
+      patients.unshift(p);
+      return json(201, p, config);
     }
 
     if (method === "get" && path === "/patients") {
