@@ -18,6 +18,11 @@ export function duplicateFromLast(last: EvolucaoDiaria | null) {
     exames: last?.exames ?? null,
     drogasVasoativas: last?.drogasVasoativas ?? false,
     drogasVasoativasDescricao: last?.drogasVasoativasDescricao ?? null,
+    inotropicos: last?.inotropicos ?? null,
+    antibioticos: last?.antibioticos ?? null,
+    previos: last?.previos ?? null,
+    culturas: last?.culturas ?? null,
+    diurese: last?.diurese ?? null,
     ventilacaoMecanica: last?.ventilacaoMecanica ?? false,
     viaAerea: last?.viaAerea ?? "NENHUMA",
     dispositivos: last?.dispositivos ?? []
@@ -35,6 +40,11 @@ export function duplicateFromBase(base: PacienteBaseClinica | null) {
     muc: base?.muc ?? null,
     drogasVasoativas: base?.drogasVasoativas ?? false,
     drogasVasoativasDescricao: base?.drogasVasoativasDescricao ?? null,
+    inotropicos: base?.inotropicos ?? null,
+    antibioticos: base?.antibioticos ?? null,
+    previos: base?.previos ?? null,
+    culturas: base?.culturas ?? null,
+    diurese: base?.diurese ?? null,
     ventilacaoMecanica: base?.ventilacaoMecanica ?? false,
     viaAerea: base?.viaAerea ?? "NENHUMA",
     dispositivos: base?.dispositivos ?? []

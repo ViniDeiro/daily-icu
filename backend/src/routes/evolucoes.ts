@@ -30,6 +30,11 @@ type MockDay = {
   exames: string | null;
   drogasVasoativas: boolean;
   drogasVasoativasDescricao: string | null;
+  inotropicos?: string | null;
+  antibioticos?: string | null;
+  previos?: string | null;
+  culturas?: string | null;
+  diurese?: string | null;
   ventilacaoMecanica: boolean;
   viaAerea: "IOT" | "TQT" | "NENHUMA";
   dispositivos: string[];
@@ -272,6 +277,11 @@ router.post("/patients/:id/days", auth, requireHospital, async (req, res) => {
       exames: duplicated.exames ?? null,
       drogasVasoativas: duplicated.drogasVasoativas ?? false,
       drogasVasoativasDescricao: duplicated.drogasVasoativasDescricao ?? null,
+      inotropicos: duplicated.inotropicos ?? null,
+      antibioticos: duplicated.antibioticos ?? null,
+      previos: duplicated.previos ?? null,
+      culturas: duplicated.culturas ?? null,
+      diurese: duplicated.diurese ?? null,
       ventilacaoMecanica: duplicated.ventilacaoMecanica ?? false,
       viaAerea: duplicated.viaAerea ?? "NENHUMA",
       dispositivos: duplicated.dispositivos ?? [],
@@ -360,6 +370,11 @@ router.put("/patients/:id/days/:dayId", auth, requireHospital, async (req, res) 
       exames: string | null;
       drogasVasoativas: boolean;
       drogasVasoativasDescricao: string | null;
+      inotropicos: string | null;
+      antibioticos: string | null;
+      previos: string | null;
+      culturas: string | null;
+      diurese: string | null;
       ventilacaoMecanica: boolean;
       viaAerea: "IOT" | "TQT" | "NENHUMA";
       dispositivos: string[];
@@ -383,6 +398,11 @@ router.put("/patients/:id/days/:dayId", auth, requireHospital, async (req, res) 
       exames: body.exames ?? day.exames,
       drogasVasoativas: body.drogasVasoativas ?? day.drogasVasoativas,
       drogasVasoativasDescricao: body.drogasVasoativasDescricao ?? day.drogasVasoativasDescricao,
+      inotropicos: body.inotropicos ?? day.inotropicos,
+      antibioticos: body.antibioticos ?? day.antibioticos,
+      previos: body.previos ?? day.previos,
+      culturas: body.culturas ?? day.culturas,
+      diurese: body.diurese ?? day.diurese,
       ventilacaoMecanica: body.ventilacaoMecanica ?? day.ventilacaoMecanica,
       viaAerea: body.viaAerea ?? day.viaAerea,
       dispositivos: body.dispositivos ?? day.dispositivos
@@ -421,6 +441,11 @@ router.put("/patients/:id/days/:dayId", auth, requireHospital, async (req, res) 
     exames: string;
     drogasVasoativas: boolean;
     drogasVasoativasDescricao: string | null;
+    inotropicos: string | null;
+    antibioticos: string | null;
+    previos: string | null;
+    culturas: string | null;
+    diurese: string | null;
     ventilacaoMecanica: boolean;
     viaAerea: "IOT" | "TQT" | "NENHUMA";
     dispositivos: string[];
@@ -445,6 +470,11 @@ router.put("/patients/:id/days/:dayId", auth, requireHospital, async (req, res) 
       exames: body.exames ?? day.exames ?? null,
       drogasVasoativas: body.drogasVasoativas ?? day.drogasVasoativas,
       drogasVasoativasDescricao: body.drogasVasoativasDescricao ?? day.drogasVasoativasDescricao ?? null,
+      inotropicos: body.inotropicos ?? day.inotropicos ?? null,
+      antibioticos: body.antibioticos ?? day.antibioticos ?? null,
+      previos: body.previos ?? day.previos ?? null,
+      culturas: body.culturas ?? day.culturas ?? null,
+      diurese: body.diurese ?? day.diurese ?? null,
       ventilacaoMecanica: body.ventilacaoMecanica ?? day.ventilacaoMecanica,
       viaAerea: body.viaAerea ?? day.viaAerea,
       dispositivos: body.dispositivos ?? day.dispositivos
@@ -463,6 +493,11 @@ router.put("/patients/:id/days/:dayId", auth, requireHospital, async (req, res) 
       muc: updated.muc ?? null,
       drogasVasoativas: updated.drogasVasoativas,
       drogasVasoativasDescricao: updated.drogasVasoativasDescricao ?? null,
+      inotropicos: updated.inotropicos ?? null,
+      antibioticos: updated.antibioticos ?? null,
+      previos: updated.previos ?? null,
+      culturas: updated.culturas ?? null,
+      diurese: updated.diurese ?? null,
       ventilacaoMecanica: updated.ventilacaoMecanica,
       viaAerea: updated.viaAerea,
       dispositivos: updated.dispositivos
@@ -477,6 +512,11 @@ router.put("/patients/:id/days/:dayId", auth, requireHospital, async (req, res) 
       muc: updated.muc ?? null,
       drogasVasoativas: updated.drogasVasoativas,
       drogasVasoativasDescricao: updated.drogasVasoativasDescricao ?? null,
+      inotropicos: updated.inotropicos ?? null,
+      antibioticos: updated.antibioticos ?? null,
+      previos: updated.previos ?? null,
+      culturas: updated.culturas ?? null,
+      diurese: updated.diurese ?? null,
       ventilacaoMecanica: updated.ventilacaoMecanica,
       viaAerea: updated.viaAerea,
       dispositivos: updated.dispositivos

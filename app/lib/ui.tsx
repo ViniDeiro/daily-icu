@@ -15,31 +15,32 @@ import {
 
 export const theme = {
   colors: {
-    bg: "#F6F8FC",
-    bg2: "#EAF1FF",
+    bg: "#F8FAFC", // Slate 50
+    bg2: "#F1F5F9", // Slate 100
     surface: "#FFFFFF",
-    surface2: "#F2F5FB",
-    surface3: "#EBF0FA",
-    surface4: "#E4EAF6",
-    border: "rgba(15,23,42,0.10)",
-    text: "#0B1220",
-    muted: "rgba(11,18,32,0.72)",
-    subtle: "rgba(11,18,32,0.54)",
-    primary: "#2F6BFF",
-    success: "#16A56B",
-    warning: "#F59E0B",
-    danger: "#EF4444"
+    surface2: "#F8FAFC", // Slate 50
+    surface3: "#E2E8F0", // Slate 200
+    surface4: "#CBD5E1", // Slate 300
+    border: "#E2E8F0", // Slate 200
+    text: "#0F172A", // Slate 900
+    muted: "#64748B", // Slate 500
+    subtle: "#94A3B8", // Slate 400
+    primary: "#0EA5E9", // Sky 500 (Mais moderno/vibrante que o azul padrão)
+    success: "#10B981", // Emerald 500
+    warning: "#F59E0B", // Amber 500
+    danger: "#EF4444" // Red 500
   },
-  radii: { sm: 10, md: 14, lg: 18, xl: 24 },
-  space: { xs: 6, sm: 10, md: 14, lg: 18, xl: 24, xxl: 32 },
+  radii: { sm: 8, md: 12, lg: 16, xl: 24 },
+  space: { xs: 6, sm: 12, md: 20, lg: 32, xl: 48, xxl: 64 },
   font: {
-    h1: 28,
-    h2: 20,
-    h3: 16,
+    h1: 32,
+    h2: 24,
+    h3: 18,
     body: 15,
     small: 13
   }
 } as const;
+
 
 export function formatDateBR(date: Date) {
   return date.toLocaleDateString("pt-BR");
@@ -139,7 +140,7 @@ export function Tag(props: { label: string; tone?: "default" | "primary" | "succ
   const fg =
     tone === "primary"
       ? theme.colors.primary
-    : tone === "success"
+      : tone === "success"
         ? theme.colors.success
         : tone === "warning"
           ? theme.colors.warning
@@ -165,35 +166,17 @@ export function Button(props: {
   const bg =
     tone === "primary"
       ? theme.colors.primary
-    : tone === "success"
-      ? theme.colors.success
-    : tone === "danger"
-      ? theme.colors.danger
-      : theme.colors.surface2;
+      : tone === "success"
+        ? theme.colors.success
+        : tone === "danger"
+          ? theme.colors.danger
+          : theme.colors.surface;
   const borderColor =
     tone === "neutral"
       ? theme.colors.border
-    : tone === "primary"
-      ? "rgba(47,107,255,0.35)"
-    : tone === "success"
-      ? "rgba(22,165,107,0.35)"
-      : "rgba(239,68,68,0.35)";
+      : "transparent";
   const fg = tone === "neutral" ? theme.colors.text : "#FFFFFF";
-  const webBgDisabled =
-    Platform.OS === "web" && (props.disabled || props.loading) && tone !== "neutral"
-      ? ({ backgroundImage: "none" } as any)
-      : null;
-  const webBg =
-    Platform.OS === "web" && tone !== "neutral"
-      ? ({
-          backgroundImage:
-            tone === "primary"
-              ? "linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.00) 48%), linear-gradient(135deg, #2F6BFF 0%, #2557FF 100%)"
-              : tone === "success"
-                ? "linear-gradient(180deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.00) 55%), linear-gradient(135deg, #16A56B 0%, #0F8C59 100%)"
-                : "linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.00) 55%), linear-gradient(135deg, #EF4444 0%, #DC2626 100%)"
-        } as any)
-      : null;
+  
   return (
     <Pressable
       onPress={props.onPress}
@@ -203,11 +186,9 @@ export function Button(props: {
         {
           backgroundColor: bg,
           borderColor,
-          opacity: props.disabled ? 0.45 : pressed ? 0.92 : 1,
-          transform: pressed ? [{ translateY: 1 }] : [{ translateY: 0 }]
+          opacity: props.disabled ? 0.5 : pressed ? 0.9 : 1,
+          transform: pressed ? [{ scale: 0.98 }] : [{ scale: 1 }]
         },
-        webBg,
-        webBgDisabled,
         props.style
       ]}
     >
@@ -227,46 +208,51 @@ export function TextField(props: {
   editable?: boolean;
   right?: ReactNode;
   style?: StyleProp<ViewStyle>;
+  type?: string; // Web only
 }) {
   const [focused, setFocused] = useState(false);
   const editable = props.editable ?? true;
   const borderColor = useMemo(() => {
-    if (!editable) return "rgba(15,23,42,0.07)";
-    if (focused) return "rgba(47,107,255,0.55)";
+    if (!editable) return theme.colors.border;
+    if (focused) return theme.colors.primary;
     return theme.colors.border;
   }, [focused, editable]);
-  const focusShadow = useMemo(() => {
+  
+  const focusRing = useMemo(() => {
     if (!focused) return null;
     return Platform.OS === "web"
-      ? ({ boxShadow: "0px 18px 44px rgba(47,107,255,0.18)" } as any)
-      : { shadowColor: "#2F6BFF", shadowOpacity: 0.14, shadowRadius: 12, elevation: 2 };
+      ? ({ boxShadow: `0 0 0 4px ${theme.colors.primary}15`, borderColor: theme.colors.primary } as any)
+      : null;
   }, [focused]);
-  const bg = editable ? (focused ? theme.colors.surface : theme.colors.surface2) : theme.colors.surface3;
+
+  const bg = editable ? (focused ? theme.colors.surface : theme.colors.bg2) : theme.colors.bg2;
+  
   return (
     <View style={props.style}>
       <Text style={styles.label}>{props.label}</Text>
       <View
         style={[
           styles.inputWrap,
-          { borderColor, backgroundColor: bg },
-          focusShadow
+          { borderColor: focused ? theme.colors.primary : theme.colors.border, backgroundColor: bg },
+          focusRing
         ]}
       >
         <TextInput
           value={props.value}
           onChangeText={props.onChangeText}
           placeholder={props.placeholder}
-          placeholderTextColor="rgba(11,18,32,0.35)"
+          placeholderTextColor={theme.colors.subtle}
           secureTextEntry={props.secureTextEntry}
           keyboardType={props.keyboardType}
           multiline={props.multiline}
           editable={editable}
           onFocus={() => (editable ? setFocused(true) : null)}
           onBlur={() => setFocused(false)}
+          {...({ type: props.type } as any)}
           style={[
             styles.input,
             props.multiline ? styles.textArea : null,
-            !editable ? { opacity: 0.78 } : null
+            !editable ? { opacity: 0.7 } : null
           ]}
         />
         {props.right ? <View style={styles.inputRight}>{props.right}</View> : null}
@@ -340,51 +326,41 @@ export function SectionTitle(props: { title: string; right?: ReactNode }) {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: theme.colors.bg,
-    ...(Platform.OS === "web"
-      ? ({
-          backgroundImage: `radial-gradient(1100px 620px at 15% 0%, ${theme.colors.bg2} 0%, ${theme.colors.bg} 55%), radial-gradient(900px 560px at 92% 18%, rgba(47,107,255,0.12) 0%, rgba(47,107,255,0.00) 60%)`
-        } as any)
-      : null)
+    backgroundColor: theme.colors.bg
   },
   padded: { padding: theme.space.lg },
   scrollContent: { padding: theme.space.lg, gap: theme.space.md },
   headerCard: {
-    backgroundColor: "rgba(255,255,255,0.78)",
-    borderWidth: 1,
+    backgroundColor: theme.colors.surface,
+    borderBottomWidth: 1,
     borderColor: theme.colors.border,
-    borderRadius: theme.radii.xl,
-    padding: theme.space.lg,
-    marginBottom: theme.space.md,
-    ...(Platform.OS === "web"
-      ? ({ boxShadow: "0px 20px 56px rgba(15,23,42,0.14)", backdropFilter: "blur(12px)" } as any)
-      : { shadowColor: "#0B1220", shadowOpacity: 0.10, shadowRadius: 18, elevation: 6 })
+    paddingHorizontal: theme.space.lg,
+    paddingVertical: theme.space.md,
+    marginBottom: theme.space.md
   },
   headerTopRow: { flexDirection: "row", alignItems: "center" },
   brandDot: {
     width: 10,
     height: 10,
-    borderRadius: 10,
-    backgroundColor: theme.colors.primary,
-    ...(Platform.OS === "web" ? ({ boxShadow: `0px 0px 0px 6px rgba(47,107,255,0.14)` } as any) : null)
+    borderRadius: 999,
+    backgroundColor: theme.colors.primary
   },
-  h1: { fontSize: theme.font.h1, color: theme.colors.text, fontWeight: "900", letterSpacing: 0.2 },
-  h2: { fontSize: theme.font.h2, color: theme.colors.text, fontWeight: "800" },
-  subtle: { color: theme.colors.subtle, marginTop: 4, fontSize: theme.font.small },
+  h1: { fontSize: theme.font.h1, color: theme.colors.text, fontWeight: "800", letterSpacing: -0.8 },
+  h2: { fontSize: theme.font.h2, color: theme.colors.text, fontWeight: "700", letterSpacing: -0.5 },
+  subtle: { color: theme.colors.subtle, marginTop: 4, fontSize: theme.font.body },
   card: {
     backgroundColor: theme.colors.surface,
     borderWidth: 1,
     borderColor: theme.colors.border,
-    borderRadius: theme.radii.xl,
+    borderRadius: theme.radii.lg,
     padding: theme.space.lg,
-    overflow: "hidden",
     ...(Platform.OS === "web"
-      ? ({ boxShadow: "0px 18px 52px rgba(15,23,42,0.12)" } as any)
-      : { shadowColor: "#0B1220", shadowOpacity: 0.10, shadowRadius: 16, elevation: 5 })
+      ? ({ boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)" } as any)
+      : { shadowColor: "#000", shadowOpacity: 0.05, shadowRadius: 4, elevation: 2 })
   },
-  label: { color: theme.colors.muted, marginBottom: 6, fontSize: theme.font.small, fontWeight: "600" },
+  label: { color: theme.colors.text, marginBottom: 6, fontSize: theme.font.small, fontWeight: "500" },
   inputWrap: {
-    backgroundColor: theme.colors.surface2,
+    backgroundColor: theme.colors.surface,
     borderWidth: 1,
     borderColor: theme.colors.border,
     borderRadius: theme.radii.lg,
@@ -395,60 +371,59 @@ const styles = StyleSheet.create({
     flex: 1,
     color: theme.colors.text,
     paddingHorizontal: theme.space.md,
-    paddingVertical: 12,
-    fontSize: theme.font.body
+    paddingVertical: 14,
+    fontSize: theme.font.body,
+    height: 52
   },
-  textArea: { minHeight: 120, textAlignVertical: "top" },
+  textArea: { minHeight: 100, textAlignVertical: "top", height: "auto", paddingVertical: 12 },
   inputRight: { paddingRight: theme.space.md },
   button: {
     borderRadius: theme.radii.lg,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    minHeight: 44,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    minHeight: 48,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
+    borderWidth: 0,
     ...(Platform.OS === "web"
-      ? ({ cursor: "pointer", boxShadow: "0px 10px 22px rgba(15,23,42,0.10)" } as any)
-      : { shadowColor: "#0B1220", shadowOpacity: 0.10, shadowRadius: 10, elevation: 3 })
+      ? ({ cursor: "pointer", transition: "all 0.15s ease-out" } as any)
+      : null)
   },
-  buttonText: { fontSize: theme.font.body, fontWeight: "700" },
-  link: { color: theme.colors.primary, fontWeight: "700" },
+  buttonText: { fontSize: theme.font.body, fontWeight: "600", letterSpacing: 0.3 },
+  link: { color: theme.colors.primary, fontWeight: "600" },
   divider: { height: 1, backgroundColor: theme.colors.border, marginVertical: theme.space.sm },
   tag: {
     paddingHorizontal: 10,
-    paddingVertical: 7,
+    paddingVertical: 6,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: "rgba(15,23,42,0.08)"
+    borderColor: "transparent"
   },
-  tagText: { fontSize: theme.font.small, fontWeight: "700" },
-  kvRow: { flexDirection: "row", justifyContent: "space-between", gap: 12, paddingVertical: 6 },
-  kvKey: { color: theme.colors.muted, fontSize: theme.font.small },
-  kvVal: { color: theme.colors.text, fontSize: theme.font.small, fontWeight: "700" },
+  tagText: { fontSize: theme.font.small, fontWeight: "600" },
+  kvRow: { flexDirection: "row", justifyContent: "space-between", gap: 12, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: theme.colors.bg2 },
+  kvKey: { color: theme.colors.muted, fontSize: theme.font.body },
+  kvVal: { color: theme.colors.text, fontSize: theme.font.body, fontWeight: "500" },
   chipsRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
-  sectionTitleRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  sectionTitleRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: theme.space.sm },
   segmentedWrap: {
     flexDirection: "row",
-    backgroundColor: theme.colors.surface2,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: 999,
+    backgroundColor: theme.colors.bg2,
+    borderRadius: theme.radii.lg,
     padding: 4
   },
   segmentedItem: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: 8,
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 999
+    borderRadius: theme.radii.md
   },
   segmentedItemActive: {
     backgroundColor: theme.colors.surface,
     ...(Platform.OS === "web"
-      ? ({ boxShadow: "0px 10px 26px rgba(15,23,42,0.10)" } as any)
-      : { shadowColor: "#0B1220", shadowOpacity: 0.10, shadowRadius: 10, elevation: 2 })
+      ? ({ boxShadow: "0 2px 4px 0 rgb(0 0 0 / 0.08)" } as any)
+      : { shadowColor: "#000", shadowOpacity: 0.08, shadowRadius: 2, elevation: 2 })
   },
-  segmentedText: { color: theme.colors.muted, fontSize: theme.font.small, fontWeight: "800" },
-  segmentedTextActive: { color: theme.colors.text }
+  segmentedText: { color: theme.colors.muted, fontSize: theme.font.small, fontWeight: "500" },
+  segmentedTextActive: { color: theme.colors.text, fontWeight: "600" }
 });

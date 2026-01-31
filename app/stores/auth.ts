@@ -20,12 +20,21 @@ export const useAuth = create<State & Actions>((set) => ({
   hospitalId: null,
   hydrated: false,
   hydrate: async () => {
-    const available = await SecureStore.isAvailableAsync();
-    const token = available ? await SecureStore.getItemAsync("token") : (globalThis as any).localStorage?.getItem("token");
-    const hospitalId = available
-      ? await SecureStore.getItemAsync("hospitalId")
-      : (globalThis as any).localStorage?.getItem("hospitalId");
-    set({ token: token ?? null, hospitalId: hospitalId ?? null, hydrated: true });
+    try {
+      if (Platform.OS === "web") {
+        const token = (globalThis as any).localStorage?.getItem("token");
+        const hospitalId = (globalThis as any).localStorage?.getItem("hospitalId");
+        set({ token: token ?? null, hospitalId: hospitalId ?? null, hydrated: true });
+        return;
+      }
+      const available = await SecureStore.isAvailableAsync();
+      const token = available ? await SecureStore.getItemAsync("token") : null;
+      const hospitalId = available ? await SecureStore.getItemAsync("hospitalId") : null;
+      set({ token: token ?? null, hospitalId: hospitalId ?? null, hydrated: true });
+    } catch (e) {
+      console.error("Auth hydrate failed", e);
+      set({ hydrated: true });
+    }
   },
   setToken: async (t) => {
     const available = await SecureStore.isAvailableAsync();

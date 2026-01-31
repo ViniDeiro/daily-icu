@@ -3,11 +3,8 @@ import Constants from "expo-constants";
 import { useAuth } from "../stores/auth";
 
 const envBaseURL = (globalThis as any)?.process?.env?.EXPO_PUBLIC_API_BASE_URL as string | undefined;
-const envMockMode = (globalThis as any)?.process?.env?.EXPO_PUBLIC_MOCK_MODE as string | undefined;
-const extraMockMode =
-  (Constants?.expoConfig?.extra as any)?.mockMode ??
-  ((Constants as any)?.manifest?.extra as any)?.mockMode;
-const mockMode = envMockMode === "1" || envMockMode === "true" || !!extraMockMode;
+// Force mock mode ON for easy testing
+const mockMode = true;
 
 const baseURL =
   envBaseURL ||
@@ -166,6 +163,10 @@ if (mockMode) {
     const path = normPath(config.url);
 
     if (method === "post" && path === "/auth/login") {
+      return json(200, { token: "mock-token" }, config);
+    }
+
+    if (method === "post" && path === "/auth/register") {
       return json(200, { token: "mock-token" }, config);
     }
 

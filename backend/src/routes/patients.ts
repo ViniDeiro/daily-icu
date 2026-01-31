@@ -10,6 +10,10 @@ const router = Router();
 type MockPatient = {
   id: string;
   nome: string;
+  cpf?: string | null;
+  nomeMae?: string | null;
+  nomePai?: string | null;
+  endereco?: string | null;
   registroHospitalar: string;
   leito?: string | null;
   dataNascimento: string;
@@ -28,6 +32,8 @@ const mockPatients: MockPatient[] = [
   {
     id: "p1",
     nome: "Soares da Silva Souza",
+    cpf: "123.456.789-00",
+    nomeMae: "Maria Silva",
     registroHospitalar: "64111",
     leito: "10",
     dataNascimento: "1952-01-01",
@@ -44,6 +50,8 @@ const mockPatients: MockPatient[] = [
   {
     id: "p2",
     nome: "Zilda de Oliveira Zocatelli",
+    cpf: "987.654.321-99",
+    nomeMae: "Joana Oliveira",
     registroHospitalar: "359245",
     leito: "03",
     dataNascimento: "1949-01-01",
@@ -77,6 +85,10 @@ const mockPatients: MockPatient[] = [
 
 const createSchema = z.object({
   nome: z.string().min(1),
+  cpf: z.string().min(11),
+  nomeMae: z.string().min(1),
+  nomePai: z.string().optional(),
+  endereco: z.string().optional(),
   registroHospitalar: z.string().min(1),
   leito: z.string().optional(),
   dataNascimento: z.string(),
@@ -106,6 +118,10 @@ router.post("/", auth, requireHospital, async (req, res) => {
     const paciente: MockPatient = {
       id: randomUUID(),
       nome: b.nome,
+      cpf: b.cpf,
+      nomeMae: b.nomeMae,
+      nomePai: b.nomePai || null,
+      endereco: b.endereco || null,
       registroHospitalar: b.registroHospitalar,
       leito: b.leito ?? null,
       dataNascimento: b.dataNascimento,
@@ -125,6 +141,10 @@ router.post("/", auth, requireHospital, async (req, res) => {
   const paciente = await prisma.paciente.create({
     data: {
       nome: b.nome,
+      cpf: b.cpf,
+      nomeMae: b.nomeMae,
+      nomePai: b.nomePai,
+      endereco: b.endereco,
       registroHospitalar: b.registroHospitalar,
       leito: b.leito ?? null,
       dataNascimento: new Date(b.dataNascimento),

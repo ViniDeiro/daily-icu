@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import { styled } from "nativewind";
 import { api } from "../lib/api";
 import { useAuth } from "../stores/auth";
 import { Redirect, useRouter } from "expo-router";
-import { AppHeader, Button, Card, Screen, Tag, theme } from "../lib/ui";
+import { Button, Card, Screen, StatusBadge } from "../components/ui";
 
 type Hospital = { id: string; nome: string };
+
+const StyledView = styled(View);
+const StyledText = styled(Text);
 
 export default function Hospitals() {
   const [data, setData] = useState<Hospital[]>([]);
@@ -27,14 +31,13 @@ export default function Hospitals() {
 
   if (!hydrated) {
     return (
-      <Screen>
-        <View style={{ alignItems: "center", justifyContent: "center", flex: 1 }}>
-          <ActivityIndicator color={theme.colors.primary} />
-        </View>
+      <Screen className="justify-center items-center bg-zinc-50">
+        <ActivityIndicator color="black" />
       </Screen>
     );
   }
   if (!token) return <Redirect href="/(auth)/login" />;
+
   async function select(h: Hospital) {
     await setHospital(h.id);
     r.replace("/patients");
@@ -44,40 +47,48 @@ export default function Hospitals() {
     await logout();
     r.replace("/(auth)/login");
   }
+
   return (
-    <Screen>
-      <AppHeader
-        title="Hospital"
-        subtitle="Selecione a unidade para continuar"
-        right={<Button label="Sair" tone="neutral" onPress={doLogout} />}
-      />
-      <View style={{ gap: theme.space.md, flex: 1, maxWidth: 980, width: "100%", alignSelf: "center" }}>
-        <Card style={{ padding: theme.space.lg }}>
-          <Text style={{ color: theme.colors.muted, marginBottom: theme.space.sm }}>
-            Dica: em produção, isso pode ser fixo por usuário.
-          </Text>
-          <Tag label={`${data.length} unidade(s) disponível(is)`} tone="primary" />
+    <Screen className="px-6 py-6 bg-zinc-50">
+      <StyledView className="flex-row items-center justify-between mb-8 mt-4">
+        <StyledView>
+          <StyledText className="text-3xl font-bold text-zinc-900 tracking-tighter">Unidades</StyledText>
+          <StyledText className="text-zinc-500 text-base font-medium">Selecione o local de trabalho</StyledText>
+        </StyledView>
+        <Button label="SAIR" variant="ghost" onPress={doLogout} className="h-10 px-4 bg-white shadow-sm border border-zinc-100 rounded-xl" />
+      </StyledView>
+
+      <StyledView className="w-full max-w-2xl self-center flex-1 space-y-6">
+        <Card noPadding className="p-5 flex-row items-center justify-between bg-white border-zinc-100 shadow-sm rounded-3xl">
+          <StyledView className="flex-row items-center space-x-3">
+            <StyledView className="w-2 h-2 rounded-full bg-green-500" />
+            <StyledText className="text-zinc-500 text-sm font-bold tracking-wide">DISPONÍVEIS</StyledText>
+          </StyledView>
+          <StatusBadge label={`${data.length}`} status="neutral" />
         </Card>
+
         <FlatList
           data={data}
           keyExtractor={(i) => i.id}
-          contentContainerStyle={{ gap: theme.space.md, paddingBottom: theme.space.lg }}
+          contentContainerClassName="gap-4 pb-8"
           renderItem={({ item }) => (
-            <Card style={{ padding: theme.space.lg }}>
-              <Text style={{ color: theme.colors.text, fontSize: theme.font.h2, fontWeight: "800" }}>{item.nome}</Text>
-              <View style={{ height: theme.space.md }} />
-              <Button label="Selecionar" tone="primary" onPress={() => select(item)} />
+            <Card className="flex-row items-center justify-between p-6 shadow-sm border-zinc-100 rounded-3xl active:scale-[0.98]" noPadding>
+              <StyledView className="flex-1">
+                <StyledText className="text-xl font-bold text-zinc-900 tracking-tight">{item.nome}</StyledText>
+                <StyledText className="text-zinc-400 text-sm mt-1">CNES: 123456</StyledText>
+              </StyledView>
+              <Button label="ACESSAR" onPress={() => select(item)} className="h-10 px-6 rounded-xl" />
             </Card>
           )}
           ListEmptyComponent={
-            <Card>
-              <Text style={{ color: theme.colors.muted }}>
-                {loading ? "Carregando hospitais…" : "Nenhum hospital retornado pela API."}
-              </Text>
+            <Card className="items-center py-12 border-dashed border-zinc-200 bg-transparent shadow-none">
+              <StyledText className="text-zinc-400 font-medium text-lg">
+                {loading ? "Carregando..." : "Nenhuma unidade encontrada."}
+              </StyledText>
             </Card>
           }
         />
-      </View>
+      </StyledView>
     </Screen>
   );
 }

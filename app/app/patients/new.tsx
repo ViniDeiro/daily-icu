@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
+import { styled } from "nativewind";
 import { api } from "../../lib/api";
 import { Redirect, useRouter } from "expo-router";
 import { useSaps } from "../../stores/saps";
 import { useAuth } from "../../stores/auth";
-import { AppHeader, Button, Card, Screen, TextField, theme } from "../../lib/ui";
+import { Button, Card, Screen, Input, SectionTitle } from "../../components/ui";
+
+const StyledView = styled(View);
+const StyledText = styled(Text);
 
 export default function NewPatient() {
   const r = useRouter();
@@ -13,6 +17,10 @@ export default function NewPatient() {
   const hospitalId = useAuth((s) => s.hospitalId);
   const [nome, setNome] = useState("");
   const [registro, setRegistro] = useState("");
+  const [cpf, setCpf] = useState("");
+  const [nomeMae, setNomeMae] = useState("");
+  const [nomePai, setNomePai] = useState("");
+  const [endereco, setEndereco] = useState("");
   const [leito, setLeito] = useState("");
   const [dataNasc, setDataNasc] = useState("");
   const [dataHospital, setDataHospital] = useState("");
@@ -27,10 +35,8 @@ export default function NewPatient() {
 
   if (!hydrated) {
     return (
-      <Screen>
-        <View style={{ alignItems: "center", justifyContent: "center", flex: 1 }}>
-          <ActivityIndicator color={theme.colors.primary} />
-        </View>
+      <Screen className="justify-center items-center bg-zinc-50">
+        <ActivityIndicator color="black" />
       </Screen>
     );
   }
@@ -40,10 +46,20 @@ export default function NewPatient() {
   async function save() {
     setLoading(true);
     setError(null);
+    if (!nome || !registro || !cpf || !nomeMae || !dataNasc) {
+      setError("Preencha todos os campos obrigatórios (*)");
+      setLoading(false);
+      return;
+    }
+
     try {
       const p = await api.post("/patients", {
         nome,
         registroHospitalar: registro,
+        cpf,
+        nomeMae,
+        nomePai: nomePai || undefined,
+        endereco: endereco || undefined,
         leito: leito || undefined,
         dataNascimento: dataNasc,
         dataInternacaoHospitalar: dataHospital || undefined,
@@ -68,43 +84,74 @@ export default function NewPatient() {
   }
 
   return (
-    <Screen scroll contentStyle={{ maxWidth: 720, width: "100%", alignSelf: "center" }}>
-      <AppHeader title="Novo paciente" subtitle="Cadastro (Dia 1) + criação do diário" />
-      <Card style={{ gap: theme.space.md }}>
-        <TextField label="Nome completo" value={nome} onChangeText={setNome} placeholder="Ex.: Soares da Silva Souza" />
-        <TextField label="Registro hospitalar" value={registro} onChangeText={setRegistro} placeholder="Ex.: 64111" />
-        <TextField label="Leito" value={leito} onChangeText={setLeito} placeholder="Ex.: 08" />
-        <TextField label="Data de nascimento" value={dataNasc} onChangeText={setDataNasc} placeholder="YYYY-MM-DD" />
-        <TextField
-          label="Data internação hospitalar (DIH)"
-          value={dataHospital}
-          onChangeText={setDataHospital}
-          placeholder="YYYY-MM-DD"
-        />
-        <TextField label="Data internação UTI (DIUTI)" value={dataUti} onChangeText={setDataUti} placeholder="YYYY-MM-DD" />
-        <TextField label="Previsão de alta" value={previsaoAlta} onChangeText={setPrevisaoAlta} placeholder="YYYY-MM-DD" />
-        <TextField label="Alergias" value={alergias} onChangeText={setAlergias} placeholder="Ex.: Dipirona" />
+    <Screen scroll className="bg-zinc-50">
+      <StyledView className="px-6 py-6 w-full max-w-2xl self-center">
+        <StyledView className="flex-row items-center justify-between mb-8 mt-4">
+          <StyledView>
+            <StyledText className="text-3xl font-bold text-zinc-900 tracking-tighter">Novo Paciente</StyledText>
+            <StyledText className="text-zinc-500 text-base font-medium">Cadastro e admissão</StyledText>
+          </StyledView>
+          <Button label="CANCELAR" variant="ghost" onPress={() => r.back()} className="h-10 px-4 rounded-xl bg-white border border-zinc-100 shadow-sm" />
+        </StyledView>
 
-        <View style={{ flexDirection: "row", gap: theme.space.sm }}>
-          <View style={{ flex: 1 }}>
-            <Button label="Calcular SAPS 3" tone="neutral" onPress={() => r.push("/saps3")} />
-          </View>
-          <View style={{ justifyContent: "center" }}>
-            <Text style={{ color: theme.colors.muted, fontWeight: "700" }}>SAPS: {saps3 ?? "-"}</Text>
-          </View>
-        </View>
+        <Card className="p-6 space-y-8 shadow-sm border-zinc-100 rounded-3xl" noPadding>
+          <StyledView>
+            <SectionTitle title="IDENTIFICAÇÃO" />
+            <StyledView className="space-y-4 mt-2">
+              <Input label="Nome completo *" value={nome} onChangeText={setNome} placeholder="Ex.: Soares da Silva Souza" />
+              <StyledView className="flex-row gap-4">
+                <Input containerClassName="flex-1" label="CPF *" value={cpf} onChangeText={setCpf} placeholder="000.000.000-00" keyboardType="numeric" />
+                <Input containerClassName="flex-1" label="Registro hospitalar *" value={registro} onChangeText={setRegistro} placeholder="Ex.: 64111" />
+              </StyledView>
 
-        {error ? <Text style={{ color: theme.colors.danger, fontWeight: "800" }}>{error}</Text> : null}
+              <Input label="Nome da mãe *" value={nomeMae} onChangeText={setNomeMae} placeholder="Nome completo da mãe" />
+              <Input label="Nome do pai" value={nomePai} onChangeText={setNomePai} placeholder="Nome completo do pai" />
+              <Input label="Endereço completo" value={endereco} onChangeText={setEndereco} placeholder="Rua, Número, Cidade..." />
 
-        <View style={{ flexDirection: "row", gap: theme.space.sm }}>
-          <View style={{ flex: 1 }}>
-            <Button label="Cancelar" tone="neutral" onPress={() => r.back()} disabled={loading} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Button label="Salvar" onPress={save} loading={loading} />
-          </View>
-        </View>
-      </Card>
+              <StyledView className="flex-row gap-4">
+                <Input containerClassName="flex-1" label="Nascimento *" value={dataNasc} onChangeText={setDataNasc} placeholder="YYYY-MM-DD" />
+                <Input containerClassName="flex-1" label="Leito" value={leito} onChangeText={setLeito} placeholder="Ex.: 08" />
+              </StyledView>
+            </StyledView>
+          </StyledView>
+
+          <Divider className="my-2" />
+
+          <StyledView>
+            <SectionTitle title="DATAS" />
+            <StyledView className="space-y-4 mt-2">
+              <StyledView className="flex-row gap-4">
+                <Input containerClassName="flex-1" label="DIH" value={dataHospital} onChangeText={setDataHospital} placeholder="YYYY-MM-DD" />
+                <Input containerClassName="flex-1" label="DIUTI" value={dataUti} onChangeText={setDataUti} placeholder="YYYY-MM-DD" />
+              </StyledView>
+              <Input label="Previsão de alta" value={previsaoAlta} onChangeText={setPrevisaoAlta} placeholder="YYYY-MM-DD" />
+            </StyledView>
+          </StyledView>
+
+          <Divider className="my-2" />
+
+          <StyledView>
+            <SectionTitle title="CLÍNICA" />
+            <StyledView className="space-y-4 mt-2">
+              <Input label="Alergias" value={alergias} onChangeText={setAlergias} placeholder="Ex.: Dipirona" />
+
+              <StyledView className="flex-row gap-4 items-end">
+                <Button label="CALCULAR SAPS 3" variant="secondary" onPress={() => r.push("/saps3")} className="flex-1 rounded-xl h-14 bg-zinc-50 border-zinc-200" />
+                <StyledView className="flex-1 h-14 justify-center items-center bg-zinc-100 rounded-xl border border-zinc-200">
+                  <StyledText className="text-zinc-500 text-xs font-bold uppercase tracking-widest">Score SAPS 3</StyledText>
+                  <StyledText className="text-zinc-900 text-xl font-bold">{saps3 ?? "-"}</StyledText>
+                </StyledView>
+              </StyledView>
+            </StyledView>
+          </StyledView>
+
+          {error ? <StyledText className="text-red-600 font-bold text-center bg-red-50 py-3 rounded-xl">{error}</StyledText> : null}
+
+          <StyledView className="pt-2">
+            <Button label="ADMITIR PACIENTE" onPress={save} loading={loading} className="rounded-2xl h-14 shadow-md shadow-zinc-200" />
+          </StyledView>
+        </Card>
+      </StyledView>
     </Screen>
   );
 }

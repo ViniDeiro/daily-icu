@@ -1,0 +1,33 @@
+npm verbose cli D:\node.exe D:\node_modules\npm\bin\npm-cli.js
+npm info using npm@10.9.3
+npm info using node@v22.19.0
+npm verbose title npm ci
+npm verbose argv "ci" "--no-audit" "--no-fund" "--loglevel" "verbose"
+npm verbose logfile logs-max:10 dir:C:\Users\vinic\AppData\Local\npm-cache\_logs\2026-01-29T20_42_25_929Z-
+npm verbose logfile C:\Users\vinic\AppData\Local\npm-cache\_logs\2026-01-29T20_42_25_929Z-debug-0.log
+npm verbose stack Error: EPERM: operation not permitted, rmdir 'D:\projetos\daily uti\app\node_modules\@babel\plugin-transform-reserved-words\lib'
+npm error code EPERM
+npm error syscall rmdir
+npm error path D:\projetos\daily uti\app\node_modules\@babel\plugin-transform-reserved-words\lib
+npm error errno -4048
+npm error [Error: EPERM: operation not permitted, rmdir 'D:\projetos\daily uti\app\node_modules\@babel\plugin-transform-reserved-words\lib'] {
+npm error   errno: -4048,
+npm error   code: 'EPERM',
+npm error   syscall: 'rmdir',
+npm error   path: 'D:\\projetos\\daily uti\\app\\node_modules\\@babel\\plugin-transform-reserved-words\\lib'
+npm error }
+npm error
+npm error The operation was rejected by your operating system.
+npm error It's possible that the file was already in use (by a text editor or antivirus),
+npm error or that you lack permissions to access it.
+npm error
+npm error If you believe this might be a permissions issue, please double-check the
+npm error permissions of the file and its containing directories, or try running
+npm error the command again as root/Administrator.
+npm verbose cwd D:\projetos\daily uti\app
+npm verbose os Windows_NT 10.0.19045
+npm verbose node v22.19.0
+npm verbose npm  v10.9.3
+npm verbose exit -4048
+npm verbose code -4048
+npm error A complete log of this run can be found in: C:\Users\vinic\AppData\Local\npm-cache\_logs\2026-01-29T20_42_25_929Z-debug-0.log

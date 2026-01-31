@@ -24,7 +24,9 @@
   "include": [
     "app",
     "stores",
-    "lib"
+    "lib",
+    "app.d.ts",
+    "nativewind-env.d.ts"
   ],
   "extends": "expo/tsconfig.base"
 }

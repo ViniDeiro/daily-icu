@@ -3,6 +3,11 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useEffect } from "react";
 import { useAuth } from "../stores/auth";
+import { NativeWindStyleSheet } from "nativewind";
+
+NativeWindStyleSheet.setOutput({
+  default: "native"
+});
 
 export default function Layout() {
   const hydrate = useAuth((s) => s.hydrate);

@@ -16,6 +16,8 @@ enum ViaAerea {
 model Hospital {
   id         String   @id @default(uuid()) @db.Uuid
   nome       String
+  cnes       String?
+  endereco   String?
   createdAt  DateTime @default(now())
   users      User[]
   pacientes  Paciente[]
@@ -34,6 +36,10 @@ model User {
 model Paciente {
   id                         String   @id @default(uuid()) @db.Uuid
   nome                       String
+  cpf                        String?
+  nomeMae                    String?
+  nomePai                    String?
+  endereco                   String?
   registroHospitalar         String
   leito                      String?
   dataNascimento             DateTime
@@ -64,6 +70,12 @@ model PacienteBaseClinica {
 
   drogasVasoativas          Boolean  @default(false)
   drogasVasoativasDescricao String?
+  inotropicos               String?
+  antibioticos              String?
+  previos                   String?
+  culturas                  String?
+  diurese                   String?
+  
   ventilacaoMecanica        Boolean  @default(false)
   viaAerea                  ViaAerea @default(NENHUMA)
   dispositivos              String[] @db.Text
@@ -97,6 +109,12 @@ model EvolucaoDiaria {
 
   drogasVasoativas          Boolean   @default(false)
   drogasVasoativasDescricao String?
+  inotropicos               String?
+  antibioticos              String?
+  previos                   String?
+  culturas                  String?
+  diurese                   String?
+
   ventilacaoMecanica        Boolean   @default(false)
   viaAerea                  ViaAerea  @default(NENHUMA)
   dispositivos              String[]  @db.Text
