@@ -1,17 +1,18 @@
-import { View } from "react-native";
+import { View, ViewProps } from "react-native";
 import { styled } from "nativewind";
 
-const StyledView = styled(View);
-
-interface CardProps {
-    children: React.ReactNode;
-    className?: string;
+interface CardProps extends ViewProps {
     noPadding?: boolean;
 }
 
-export function Card({ children, className, noPadding }: CardProps) {
+const StyledView = styled(View);
+
+export function Card({ children, className, noPadding, ...props }: CardProps) {
     return (
-        <StyledView className={`bg-white border border-zinc-100 rounded-3xl shadow-sm ${noPadding ? "" : "p-6"} ${className}`}>
+        <StyledView 
+            className={`bg-white rounded-3xl border border-slate-100 shadow-sm shadow-slate-200/50 ${noPadding ? "" : "p-6"} ${className}`} 
+            {...props}
+        >
             {children}
         </StyledView>
     );

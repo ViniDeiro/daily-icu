@@ -1,14 +1,13 @@
 import { useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, View, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import { styled } from "nativewind";
 import { api } from "../../lib/api";
 import { Redirect, useRouter } from "expo-router";
 import { useSaps } from "../../stores/saps";
 import { useAuth } from "../../stores/auth";
-import { Button, Card, Screen, Input, SectionTitle } from "../../components/ui";
+import { Button, Card, Screen, FormField, SectionTitle, Divider, TopBar } from "../../components/ui";
 
 const StyledView = styled(View);
-const StyledText = styled(Text);
 
 export default function NewPatient() {
   const r = useRouter();
@@ -31,15 +30,10 @@ export default function NewPatient() {
   const [error, setError] = useState<string | null>(null);
   const [saps3, setSaps3] = useState<number | null>(null);
   const sapsStore = useSaps((s) => s.saps3);
+  
   if (sapsStore != null && saps3 !== sapsStore) setSaps3(sapsStore);
 
-  if (!hydrated) {
-    return (
-      <Screen className="justify-center items-center bg-zinc-50">
-        <ActivityIndicator color="black" />
-      </Screen>
-    );
-  }
+  if (!hydrated) return <Screen className="bg-slate-50"><ActivityIndicator /></Screen>;
   if (!token) return <Redirect href="/(auth)/login" />;
   if (!hospitalId) return <Redirect href="/hospitals" />;
 
@@ -77,81 +71,79 @@ export default function NewPatient() {
       }
       r.replace(`/patients/${p.data.id}`);
     } catch {
-      setError("Erro ao salvar");
+      setError("Erro ao salvar. Verifique os dados.");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <Screen scroll className="bg-zinc-50">
-      <StyledView className="px-6 py-6 w-full max-w-2xl self-center">
-        <StyledView className="flex-row items-center justify-between mb-8 mt-4">
-          <StyledView>
-            <StyledText className="text-3xl font-bold text-zinc-900 tracking-tighter">Novo Paciente</StyledText>
-            <StyledText className="text-zinc-500 text-base font-medium">Cadastro e admissão</StyledText>
-          </StyledView>
-          <Button label="CANCELAR" variant="ghost" onPress={() => r.back()} className="h-10 px-4 rounded-xl bg-white border border-zinc-100 shadow-sm" />
-        </StyledView>
-
-        <Card className="p-6 space-y-8 shadow-sm border-zinc-100 rounded-3xl" noPadding>
-          <StyledView>
-            <SectionTitle title="IDENTIFICAÇÃO" />
-            <StyledView className="space-y-4 mt-2">
-              <Input label="Nome completo *" value={nome} onChangeText={setNome} placeholder="Ex.: Soares da Silva Souza" />
-              <StyledView className="flex-row gap-4">
-                <Input containerClassName="flex-1" label="CPF *" value={cpf} onChangeText={setCpf} placeholder="000.000.000-00" keyboardType="numeric" />
-                <Input containerClassName="flex-1" label="Registro hospitalar *" value={registro} onChangeText={setRegistro} placeholder="Ex.: 64111" />
-              </StyledView>
-
-              <Input label="Nome da mãe *" value={nomeMae} onChangeText={setNomeMae} placeholder="Nome completo da mãe" />
-              <Input label="Nome do pai" value={nomePai} onChangeText={setNomePai} placeholder="Nome completo do pai" />
-              <Input label="Endereço completo" value={endereco} onChangeText={setEndereco} placeholder="Rua, Número, Cidade..." />
-
-              <StyledView className="flex-row gap-4">
-                <Input containerClassName="flex-1" label="Nascimento *" value={dataNasc} onChangeText={setDataNasc} placeholder="YYYY-MM-DD" />
-                <Input containerClassName="flex-1" label="Leito" value={leito} onChangeText={setLeito} placeholder="Ex.: 08" />
-              </StyledView>
-            </StyledView>
-          </StyledView>
-
-          <Divider className="my-2" />
-
-          <StyledView>
-            <SectionTitle title="DATAS" />
-            <StyledView className="space-y-4 mt-2">
-              <StyledView className="flex-row gap-4">
-                <Input containerClassName="flex-1" label="DIH" value={dataHospital} onChangeText={setDataHospital} placeholder="YYYY-MM-DD" />
-                <Input containerClassName="flex-1" label="DIUTI" value={dataUti} onChangeText={setDataUti} placeholder="YYYY-MM-DD" />
-              </StyledView>
-              <Input label="Previsão de alta" value={previsaoAlta} onChangeText={setPrevisaoAlta} placeholder="YYYY-MM-DD" />
-            </StyledView>
-          </StyledView>
-
-          <Divider className="my-2" />
-
-          <StyledView>
-            <SectionTitle title="CLÍNICA" />
-            <StyledView className="space-y-4 mt-2">
-              <Input label="Alergias" value={alergias} onChangeText={setAlergias} placeholder="Ex.: Dipirona" />
-
-              <StyledView className="flex-row gap-4 items-end">
-                <Button label="CALCULAR SAPS 3" variant="secondary" onPress={() => r.push("/saps3")} className="flex-1 rounded-xl h-14 bg-zinc-50 border-zinc-200" />
-                <StyledView className="flex-1 h-14 justify-center items-center bg-zinc-100 rounded-xl border border-zinc-200">
-                  <StyledText className="text-zinc-500 text-xs font-bold uppercase tracking-widest">Score SAPS 3</StyledText>
-                  <StyledText className="text-zinc-900 text-xl font-bold">{saps3 ?? "-"}</StyledText>
+    <Screen className="bg-slate-50">
+      <TopBar title="Novo Paciente" subtitle="Admissão UTI" back />
+      
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+        <ScrollView contentContainerClassName="p-6 pb-12" showsVerticalScrollIndicator={false}>
+            <Card className="space-y-6" noPadding>
+                <StyledView className="p-6 space-y-6">
+                    <SectionTitle title="Identificação" />
+                    <FormField label="Nome completo *" value={nome} onChangeText={setNome} placeholder="Nome do paciente" />
+                    <StyledView className="flex-row gap-4">
+                        <FormField containerClassName="flex-1 min-w-0" label="CPF *" value={cpf} onChangeText={setCpf} placeholder="000.000.000-00" keyboardType="numeric" />
+                        <FormField containerClassName="flex-1 min-w-0" label="Registro *" value={registro} onChangeText={setRegistro} placeholder="RH/Prontuário" keyboardType="numeric" />
+                    </StyledView>
+                    <StyledView className="flex-row gap-4">
+                        <FormField containerClassName="flex-1 min-w-0" label="Nascimento *" value={dataNasc} onChangeText={setDataNasc} placeholder="YYYY-MM-DD" />
+                        <FormField containerClassName="flex-1 min-w-0" label="Leito" value={leito} onChangeText={setLeito} placeholder="Ex: 05" />
+                    </StyledView>
                 </StyledView>
-              </StyledView>
-            </StyledView>
-          </StyledView>
 
-          {error ? <StyledText className="text-red-600 font-bold text-center bg-red-50 py-3 rounded-xl">{error}</StyledText> : null}
+                <Divider />
 
-          <StyledView className="pt-2">
-            <Button label="ADMITIR PACIENTE" onPress={save} loading={loading} className="rounded-2xl h-14 shadow-md shadow-zinc-200" />
-          </StyledView>
-        </Card>
-      </StyledView>
+                <StyledView className="p-6 space-y-6">
+                    <SectionTitle title="Filiação & Contato" />
+                    <FormField label="Nome da Mãe *" value={nomeMae} onChangeText={setNomeMae} placeholder="Nome completo" />
+                    <FormField label="Nome do Pai" value={nomePai} onChangeText={setNomePai} placeholder="Opcional" />
+                    <FormField label="Endereço" value={endereco} onChangeText={setEndereco} placeholder="Rua, Cidade, UF" />
+                </StyledView>
+
+                <Divider />
+
+                <StyledView className="p-6 space-y-6">
+                    <SectionTitle title="Internação" />
+                    <StyledView className="flex-row gap-4">
+                        <FormField containerClassName="flex-1 min-w-0" label="Data Hosp." value={dataHospital} onChangeText={setDataHospital} placeholder="YYYY-MM-DD" />
+                        <FormField containerClassName="flex-1 min-w-0" label="Data UTI" value={dataUti} onChangeText={setDataUti} placeholder="YYYY-MM-DD" />
+                    </StyledView>
+                    <FormField label="Previsão Alta" value={previsaoAlta} onChangeText={setPrevisaoAlta} placeholder="YYYY-MM-DD" />
+                </StyledView>
+
+                <Divider />
+
+                <StyledView className="p-6 space-y-6">
+                    <SectionTitle title="Clínica" />
+                    <FormField label="Alergias" value={alergias} onChangeText={setAlergias} placeholder="Nega, Penicilina..." />
+                    
+                    <StyledView className="flex-row gap-4 items-end">
+                        <Button label="Calc. SAPS 3" variant="secondary" onPress={() => r.push("/saps3")} className="flex-1 rounded-xl h-14" />
+                        <StyledView className="flex-1 h-14 bg-slate-100 rounded-xl border border-slate-200 items-center justify-center">
+                            <SectionTitle title="Score" />
+                            <StyledView className="-mt-3"><Button label={saps3 ? String(saps3) : "-"} variant="ghost" disabled /></StyledView>
+                        </StyledView>
+                    </StyledView>
+                </StyledView>
+
+                {error && (
+                    <StyledView className="px-6 pb-2">
+                        <Pill label={error} variant="critical" className="w-full justify-center" />
+                    </StyledView>
+                )}
+
+                <StyledView className="p-6 pt-0">
+                    <Button label="Admitir Paciente" onPress={save} loading={loading} className="h-14 rounded-2xl shadow-md" />
+                </StyledView>
+            </Card>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </Screen>
   );
 }

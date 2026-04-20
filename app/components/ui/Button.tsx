@@ -1,46 +1,44 @@
-import { Text, Pressable, ActivityIndicator, View } from "react-native";
+import { TouchableOpacity, Text, ActivityIndicator, TouchableOpacityProps } from "react-native";
 import { styled } from "nativewind";
 
-const StyledPressable = styled(Pressable);
-const StyledText = styled(Text);
-
-interface ButtonProps {
+interface ButtonProps extends TouchableOpacityProps {
     label: string;
-    onPress: () => void;
-    variant?: "primary" | "secondary" | "destructive" | "ghost";
-    disabled?: boolean;
+    variant?: "primary" | "secondary" | "ghost" | "critical";
     loading?: boolean;
-    className?: string;
 }
 
-export function Button({ label, onPress, variant = "primary", disabled, loading, className }: ButtonProps) {
-    const baseStyle = "h-14 px-8 items-center justify-center rounded-2xl flex-row space-x-2";
+const StyledButton = styled(TouchableOpacity);
+const StyledText = styled(Text);
 
+export function Button({ label, variant = "primary", loading, className, disabled, ...props }: ButtonProps) {
+    const baseClass = "h-14 rounded-2xl flex-row items-center justify-center px-6 shadow-sm";
+    
+    // Variantes com cores atualizadas (Teal/Slate)
     const variants = {
-        primary: "bg-black shadow-sm active:opacity-90",
-        secondary: "bg-white border border-zinc-200 active:bg-zinc-50 shadow-sm",
-        destructive: "bg-red-600 active:opacity-90 shadow-sm",
-        ghost: "bg-transparent active:bg-zinc-50",
+        primary: "bg-primary-600 active:bg-primary-700 shadow-primary-600/20", // Teal vibrante
+        secondary: "bg-white border border-slate-200 active:bg-slate-50", // Branco com borda suave
+        ghost: "bg-transparent active:bg-slate-100 shadow-none",
+        critical: "bg-critical active:bg-red-600 shadow-critical/20"
     };
 
     const textVariants = {
-        primary: "text-white font-bold tracking-tight text-base",
-        secondary: "text-zinc-900 font-semibold text-base",
-        destructive: "text-white font-bold text-base",
-        ghost: "text-zinc-900 font-medium text-base",
+        primary: "text-white font-bold text-base tracking-wide",
+        secondary: "text-slate-700 font-bold text-base",
+        ghost: "text-primary-600 font-bold text-base",
+        critical: "text-white font-bold text-base"
     };
 
     return (
-        <StyledPressable
-            onPress={onPress}
+        <StyledButton 
+            className={`${baseClass} ${variants[variant]} ${disabled ? "opacity-50" : ""} ${className}`}
             disabled={disabled || loading}
-            className={`${baseStyle} ${variants[variant]} ${disabled ? "opacity-50" : ""} ${className}`}
+            {...props}
         >
             {loading ? (
-                <ActivityIndicator color={variant === "secondary" || variant === "ghost" ? "black" : "white"} />
+                <ActivityIndicator color={variant === "secondary" || variant === "ghost" ? "#0F766E" : "white"} />
             ) : (
                 <StyledText className={textVariants[variant]}>{label}</StyledText>
             )}
-        </StyledPressable>
+        </StyledButton>
     );
 }

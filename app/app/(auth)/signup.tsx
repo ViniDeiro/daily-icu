@@ -3,7 +3,7 @@ import { Text, View } from "react-native";
 import { styled } from "nativewind";
 import { useRouter } from "expo-router";
 import { api } from "../../lib/api";
-import { Button, Card, Input, Screen } from "../../components/ui";
+import { Button, Card, FormField, Screen } from "../../components/ui";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -43,10 +43,10 @@ export default function Signup() {
                 </StyledView>
 
                 <Card className="space-y-4">
-                    <Input label="Nome Completo" value={nome} onChangeText={setNome} placeholder="Dr. João Silva" />
-                    <Input label="CRM / Registro" value={crm} onChangeText={setCrm} placeholder="12345/SP" />
-                    <Input label="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
-                    <Input label="Senha" value={senha} onChangeText={setSenha} secureTextEntry />
+                    <FormField label="Nome Completo" value={nome} onChangeText={setNome} placeholder="Dr. João Silva" />
+                    <FormField label="CRM / Registro" value={crm} onChangeText={setCrm} placeholder="12345/SP" />
+                    <FormField label="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
+                    <FormField label="Senha" value={senha} onChangeText={setSenha} secureTextEntry />
 
                     {error && <StyledText className="text-red-600 font-bold text-sm">{error}</StyledText>}
 

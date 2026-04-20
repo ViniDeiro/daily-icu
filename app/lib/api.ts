@@ -30,6 +30,7 @@ if (mockMode) {
     saps3Atual?: number | null;
     mortalidadeEstimada?: number | null;
     baseClinica?: any;
+    saps3Result?: any; // Saps3Result
   };
   type Day = {
     id: string;
@@ -37,6 +38,7 @@ if (mockMode) {
     diaInternacaoUti: number;
     condutaDiaria: string | null;
     saps3?: number | null;
+    saps3Result?: any; // Saps3Result
     diagnosticoPrincipal?: string | null;
     diagnosticosSecundarios?: string | null;
     comorbidades?: string | null;

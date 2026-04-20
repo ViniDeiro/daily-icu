@@ -25,6 +25,7 @@
     "app",
     "stores",
     "lib",
+    "src",
     "app.d.ts",
     "nativewind-env.d.ts"
   ],

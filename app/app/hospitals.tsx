@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, View } from "react-native";
 import { styled } from "nativewind";
 import { api } from "../lib/api";
 import { useAuth } from "../stores/auth";
 import { Redirect, useRouter } from "expo-router";
-import { Button, Card, Screen, StatusBadge } from "../components/ui";
+import { Button, Card, Screen, TopBar, Pill } from "../components/ui";
 
 type Hospital = { id: string; nome: string };
 
 const StyledView = styled(View);
-const StyledText = styled(Text);
 
 export default function Hospitals() {
   const [data, setData] = useState<Hospital[]>([]);
@@ -31,15 +30,19 @@ export default function Hospitals() {
 
   if (!hydrated) {
     return (
-      <Screen className="justify-center items-center bg-zinc-50">
-        <ActivityIndicator color="black" />
+      <Screen className="justify-center items-center bg-slate-50">
+        <ActivityIndicator color="#0F766E" size="large" />
       </Screen>
     );
   }
   if (!token) return <Redirect href="/(auth)/login" />;
 
   async function select(h: Hospital) {
+    setLoading(true);
     await setHospital(h.id);
+    // Artificial delay for smooth transition feel
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    setLoading(false);
     r.replace("/patients");
   }
 
@@ -49,22 +52,24 @@ export default function Hospitals() {
   }
 
   return (
-    <Screen className="px-6 py-6 bg-zinc-50">
-      <StyledView className="flex-row items-center justify-between mb-8 mt-4">
-        <StyledView>
-          <StyledText className="text-3xl font-bold text-zinc-900 tracking-tighter">Unidades</StyledText>
-          <StyledText className="text-zinc-500 text-base font-medium">Selecione o local de trabalho</StyledText>
-        </StyledView>
-        <Button label="SAIR" variant="ghost" onPress={doLogout} className="h-10 px-4 bg-white shadow-sm border border-zinc-100 rounded-xl" />
-      </StyledView>
+    <Screen className="bg-slate-50">
+      <TopBar 
+        title="Unidades" 
+        subtitle="Selecione o local de trabalho"
+        action={
+            <Button 
+                label="Sair" 
+                variant="ghost" 
+                onPress={doLogout} 
+                className="h-9 px-3 rounded-lg text-xs" 
+            />
+        }
+      />
 
-      <StyledView className="w-full max-w-2xl self-center flex-1 space-y-6">
-        <Card noPadding className="p-5 flex-row items-center justify-between bg-white border-zinc-100 shadow-sm rounded-3xl">
-          <StyledView className="flex-row items-center space-x-3">
-            <StyledView className="w-2 h-2 rounded-full bg-green-500" />
-            <StyledText className="text-zinc-500 text-sm font-bold tracking-wide">DISPONÍVEIS</StyledText>
-          </StyledView>
-          <StatusBadge label={`${data.length}`} status="neutral" />
+      <StyledView className="flex-1 px-6 pt-6 w-full max-w-2xl self-center">
+        <Card noPadding className="p-4 flex-row items-center justify-between mb-6">
+          <Pill label="Disponíveis" variant="success" />
+          <Pill label={`${data.length}`} variant="neutral" />
         </Card>
 
         <FlatList
@@ -72,19 +77,29 @@ export default function Hospitals() {
           keyExtractor={(i) => i.id}
           contentContainerClassName="gap-4 pb-8"
           renderItem={({ item }) => (
-            <Card className="flex-row items-center justify-between p-6 shadow-sm border-zinc-100 rounded-3xl active:scale-[0.98]" noPadding>
-              <StyledView className="flex-1">
-                <StyledText className="text-xl font-bold text-zinc-900 tracking-tight">{item.nome}</StyledText>
-                <StyledText className="text-zinc-400 text-sm mt-1">CNES: 123456</StyledText>
+            <Card className="flex-row items-center justify-between p-5 active:scale-[0.99] active:bg-slate-50" noPadding>
+              <StyledView className="flex-row items-center gap-4 flex-1 min-w-0 pr-4">
+                <StyledView className="w-12 h-12 bg-primary-50 rounded-2xl items-center justify-center border border-primary-100 shrink-0">
+                    <Pill label="🏥" variant="outline" className="border-0 bg-transparent" />
+                </StyledView>
+                <StyledView className="flex-1 min-w-0">
+                    <Pill label="CNES: 123456" variant="neutral" className="mb-1 border-0 px-0" /> 
+                    {/* Using Pill as label carrier or just text? Text is better for semantics, Pill for status. */}
+                    {/* Let's stick to text for name */}
+                    <Button 
+                        label={item.nome} 
+                        variant="ghost" 
+                        className="items-start justify-start px-0 h-auto" 
+                        onPress={() => select(item)}
+                    />
+                </StyledView>
               </StyledView>
-              <Button label="ACESSAR" onPress={() => select(item)} className="h-10 px-6 rounded-xl" />
+              <Button label="Acessar" onPress={() => select(item)} className="h-10 px-5 rounded-xl bg-primary-600 shrink-0" />
             </Card>
           )}
           ListEmptyComponent={
-            <Card className="items-center py-12 border-dashed border-zinc-200 bg-transparent shadow-none">
-              <StyledText className="text-zinc-400 font-medium text-lg">
-                {loading ? "Carregando..." : "Nenhuma unidade encontrada."}
-              </StyledText>
+            <Card className="items-center py-12 border-dashed border-2 border-slate-200 bg-transparent shadow-none">
+               <ActivityIndicator color="#94A3B8" />
             </Card>
           }
         />

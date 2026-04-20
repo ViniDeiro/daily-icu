@@ -13,19 +13,19 @@ const StyledTextInput = styled(TextInput);
 
 export function Input({ label, value, onChangeText, placeholder, secureTextEntry, keyboardType, error, className, containerClassName, ...props }: InputProps) {
     return (
-        <StyledView className={`space-y-1.5 ${containerClassName}`}>
-            {label && <StyledText className="text-xs font-semibold text-zinc-500 uppercase tracking-wider ml-1">{label}</StyledText>}
+        <StyledView className={`space-y-2 ${containerClassName}`}>
+            {label && <StyledText className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">{label}</StyledText>}
             <StyledTextInput
-                className={`h-14 border border-zinc-200 bg-zinc-50 px-4 rounded-2xl text-zinc-900 font-medium text-base focus:border-black focus:bg-white ${className}`}
+                className={`h-14 border border-slate-200 bg-slate-50 px-5 rounded-2xl text-slate-900 font-medium text-base focus:border-primary-500 focus:bg-white focus:shadow-sm focus:shadow-primary-100 ${className}`}
                 value={value}
                 onChangeText={onChangeText}
                 placeholder={placeholder}
-                placeholderTextColor="#A1A1AA"
+                placeholderTextColor="#94A3B8" // Slate-400
                 secureTextEntry={secureTextEntry}
                 keyboardType={keyboardType}
                 {...props}
             />
-            {error && <StyledText className="text-red-600 text-xs font-medium ml-1">{error}</StyledText>}
+            {error && <StyledText className="text-critical text-xs font-bold ml-1">{error}</StyledText>}
         </StyledView>
     );
 }
